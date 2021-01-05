@@ -1,13 +1,24 @@
 # 应用名称
-spring.application.name=baselog
+spring:
+  application:
+    name: baselog
 
 # 应用服务 WEB 访问端口
-server.port=8080
+server:
+  port: 8083
 
 # Actuator Web 访问端口
-management.server.port=8081
-management.endpoints.jmx.exposure.include=*
-management.endpoints.web.exposure.include=*
-management.endpoint.health.show-details=always
+management:
+  server:
+    port: 8081
+  endpoint:
+    health:
+      show-details: always
+
+
+
+# 自定义配置
+baselog:
+  packageurl: fun.gengzi.baselog
 
 
