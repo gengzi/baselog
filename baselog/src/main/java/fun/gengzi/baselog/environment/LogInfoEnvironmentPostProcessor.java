@@ -10,6 +10,13 @@ import org.springframework.stereotype.Component;
 /**
  * <h1>日志信息环境后处理器</h1>
  *
+ *
+ * 主要用于设置默认的配置
+ *
+ * autoconfig
+ * 配置对象注入，过滤器，拦截器，aop
+ *
+ *
  * @author gengzi
  * @date 2021年1月4日22:35:42
  */
