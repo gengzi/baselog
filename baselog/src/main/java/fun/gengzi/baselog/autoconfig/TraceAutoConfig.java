@@ -3,8 +3,10 @@ package fun.gengzi.baselog.autoconfig;
 import fun.gengzi.baselog.BaseLogProperties;
 import fun.gengzi.baselog.MDCContentCreate;
 import fun.gengzi.baselog.filter.TraceFilter;
+import fun.gengzi.baselog.instrument.controller.ControllerLogAspect;
 import fun.gengzi.baselog.trace.CreateTraceId;
 import fun.gengzi.baselog.trace.DefaultCreateTraceId;
+import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -49,6 +51,15 @@ public class TraceAutoConfig {
     @Bean
     public MDCContentCreate mdcContentCreate() {
         return new MDCContentCreate();
+    }
+
+
+    @Bean
+    public AspectJExpressionPointcutAdvisor aspectJExpressionPointcutAdvisor(BaseLogProperties baseLogProperties) {
+        AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
+        advisor.setExpression(baseLogProperties.getPackageurl());
+        advisor.setAdvice(new ControllerLogAspect());
+        return advisor;
     }
 
 

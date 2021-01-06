@@ -2,8 +2,6 @@ package fun.gengzi.baselog;
 
 
 import org.slf4j.MDC;
-
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,11 +19,6 @@ public class MDCContentCreate {
      * @param traceMap
      */
     public static void writeLog(Map<String, String> traceMap) {
-
-//        final HashMap<String, String> map = new HashMap<>();
-//        map.put(LogFiedsEnum.METHOD.getLogFide(), method);
-//        map.put(LogFiedsEnum.REQUESTURL.getLogFide(), requestURI);
-
         LogFiedsEnum.LOGFIDE_TO_DESC.forEach(
                 (key, value) -> {
                     // 设置日志
@@ -34,8 +27,6 @@ public class MDCContentCreate {
                     }
                 }
         );
-
-
     }
 
 
