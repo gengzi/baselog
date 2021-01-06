@@ -19,6 +19,6 @@ management:
 
 # 自定义配置
 baselog:
-  packageurl: fun.gengzi.baselog
+  packageurl: "execution(public * java.util.concurrent.ThreadPoolExecutor.execute(..))"
 
 
