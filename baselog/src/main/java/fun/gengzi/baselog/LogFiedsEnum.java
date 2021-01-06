@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Getter
 public enum LogFiedsEnum {
     //
+    TRACEID("bl-traceid","跟踪id"),
     REQUESTURL("requesturl", "请求的url"),
     METHOD("method", "请求的方法");
 

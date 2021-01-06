@@ -2,8 +2,11 @@ package fun.gengzi.baselog.filter;
 
 import fun.gengzi.baselog.BaseLogProperties;
 import fun.gengzi.baselog.LogFiedsEnum;
+import fun.gengzi.baselog.MDCContentCreate;
+import fun.gengzi.baselog.trace.CreateTraceId;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +17,10 @@ import java.util.HashMap;
 public class TraceFilter implements Filter {
 
     private BaseLogProperties baseLogProperties;
+
+    @Autowired
+    private CreateTraceId createTraceId;
+
 
     public TraceFilter(BaseLogProperties baseLogProperties) {
         this.baseLogProperties = baseLogProperties;
@@ -45,19 +52,12 @@ public class TraceFilter implements Filter {
          *
          *
          */
-
-
+        String traceId = createTraceId.create();
         final HashMap<String, String> map = new HashMap<>();
+        map.put(LogFiedsEnum.TRACEID.getLogFide(), traceId);
         map.put(LogFiedsEnum.METHOD.getLogFide(), method);
         map.put(LogFiedsEnum.REQUESTURL.getLogFide(), requestURI);
-
-        LogFiedsEnum.LOGFIDE_TO_DESC.forEach(
-                (key, value) -> {
-                    // 设置日志
-                    MDC.put(key, map.get(key));
-                }
-
-        );
+        MDCContentCreate.writeLog(map);
         // 放行
         filterChain.doFilter(servletRequest, servletResponse);
         MDC.clear();
