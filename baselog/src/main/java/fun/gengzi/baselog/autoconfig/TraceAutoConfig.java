@@ -1,6 +1,7 @@
 package fun.gengzi.baselog.autoconfig;
 
 import fun.gengzi.baselog.BaseLogProperties;
+import fun.gengzi.baselog.LoggerInfo;
 import fun.gengzi.baselog.MDCContentCreate;
 import fun.gengzi.baselog.filter.TraceFilter;
 import fun.gengzi.baselog.instrument.controller.ControllerLogAspect;
@@ -55,10 +56,23 @@ public class TraceAutoConfig {
 
 
     @Bean
-    public AspectJExpressionPointcutAdvisor aspectJExpressionPointcutAdvisor(BaseLogProperties baseLogProperties) {
+    @ConditionalOnMissingBean
+    public LoggerInfo loggerInfo() {
+        return new LoggerInfo();
+    }
+
+
+//    @Bean
+//    public ControllerLogAspect controllerLogAspect(LoggerInfo loggerInfo) {
+//        return new ControllerLogAspect(loggerInfo);
+//    }
+
+
+    @Bean
+    public AspectJExpressionPointcutAdvisor aspectJExpressionPointcutAdvisor(BaseLogProperties baseLogProperties, ControllerLogAspect controllerLogAspect) {
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
         advisor.setExpression(baseLogProperties.getPackageurl());
-        advisor.setAdvice(new ControllerLogAspect());
+        advisor.setAdvice(controllerLogAspect);
         return advisor;
     }
 
