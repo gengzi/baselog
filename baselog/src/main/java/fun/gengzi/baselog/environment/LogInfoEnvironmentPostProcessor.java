@@ -31,7 +31,6 @@ import java.util.Map;
 @Component
 public class LogInfoEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
-
     private static final String PROPERTY_SOURCE_NAME = "defaultProperties";
 
     private static final String BASELOG = "baselog";
@@ -72,8 +71,8 @@ public class LogInfoEnvironmentPostProcessor implements EnvironmentPostProcessor
 
     private void addOrReplace(MutablePropertySources propertySources, Map<String, Object> map) {
         MapPropertySource target = null;
-        if (propertySources.contains("defaultProperties")) {
-            PropertySource<?> source = propertySources.get("defaultProperties");
+        if (propertySources.contains(PROPERTY_SOURCE_NAME)) {
+            PropertySource<?> source = propertySources.get(PROPERTY_SOURCE_NAME);
             if (source instanceof MapPropertySource) {
                 target = (MapPropertySource) source;
                 Iterator var5 = map.keySet().iterator();
@@ -88,10 +87,10 @@ public class LogInfoEnvironmentPostProcessor implements EnvironmentPostProcessor
         }
 
         if (target == null) {
-            target = new MapPropertySource("defaultProperties", map);
+            target = new MapPropertySource(PROPERTY_SOURCE_NAME, map);
         }
 
-        if (!propertySources.contains("defaultProperties")) {
+        if (!propertySources.contains(PROPERTY_SOURCE_NAME)) {
             propertySources.addLast(target);
         }
 

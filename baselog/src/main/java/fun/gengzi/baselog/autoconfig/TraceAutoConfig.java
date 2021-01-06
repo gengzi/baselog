@@ -55,17 +55,18 @@ public class TraceAutoConfig {
     }
 
 
+//    @Bean
+//    @ConditionalOnMissingBean
+//    public LoggerInfo loggerInfo() {
+//        return new LoggerInfo();
+//    }
+
+
     @Bean
     @ConditionalOnMissingBean
-    public LoggerInfo loggerInfo() {
-        return new LoggerInfo();
+    public ControllerLogAspect controllerLogAspect(LoggerInfo loggerInfo) {
+        return new ControllerLogAspect();
     }
-
-
-//    @Bean
-//    public ControllerLogAspect controllerLogAspect(LoggerInfo loggerInfo) {
-//        return new ControllerLogAspect(loggerInfo);
-//    }
 
 
     @Bean
