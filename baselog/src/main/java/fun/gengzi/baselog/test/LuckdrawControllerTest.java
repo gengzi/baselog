@@ -1,5 +1,6 @@
 package fun.gengzi.baselog.test;
 
+import fun.gengzi.baselog.LoggerInfo;
 import fun.gengzi.baselog.instrument.execute.ThreadPoolExecuteLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class LuckdrawControllerTest {
     @RequestMapping("/logtest")
     @ResponseBody
 //    @ThreadPoolExecuteLog
-    public void dbTest(@RequestParam("data") String data) {
+    public LoggerInfo dbTest(@RequestParam("data") String data) {
         log.info("测试打印日志1：{}", data);
         String aa = data;
         log.info("测试打印日志2：{}", data);
@@ -54,6 +55,12 @@ public class LuckdrawControllerTest {
             // 会丢失日志
             log.info("测试打印日志4：{}", data);
         });
+
+
+        LoggerInfo loggerInfo = new LoggerInfo();
+        loggerInfo.setDeviceIp("hahah");
+
+        return loggerInfo;
     }
 
 }
