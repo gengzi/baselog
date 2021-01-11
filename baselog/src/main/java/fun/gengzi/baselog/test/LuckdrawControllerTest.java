@@ -1,9 +1,7 @@
 package fun.gengzi.baselog.test;
 
 import fun.gengzi.baselog.LoggerInfo;
-import fun.gengzi.baselog.instrument.execute.ThreadPoolExecuteLog;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

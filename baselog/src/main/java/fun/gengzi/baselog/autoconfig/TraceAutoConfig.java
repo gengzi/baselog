@@ -4,7 +4,9 @@ import fun.gengzi.baselog.BaseLogProperties;
 import fun.gengzi.baselog.LoggerInfo;
 import fun.gengzi.baselog.MDCContentCreate;
 import fun.gengzi.baselog.filter.TraceFilter;
+import fun.gengzi.baselog.instrument.controller.BaseLogUserService;
 import fun.gengzi.baselog.instrument.controller.ControllerLogAspect;
+import fun.gengzi.baselog.instrument.controller.DefaultBaseLogUserServiceImpl;
 import fun.gengzi.baselog.trace.CreateTraceId;
 import fun.gengzi.baselog.trace.DefaultCreateTraceId;
 import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
@@ -77,5 +79,11 @@ public class TraceAutoConfig {
         return advisor;
     }
 
+
+    @Bean
+    @ConditionalOnMissingBean
+    public BaseLogUserService baseLogUserService() {
+        return new DefaultBaseLogUserServiceImpl();
+    }
 
 }

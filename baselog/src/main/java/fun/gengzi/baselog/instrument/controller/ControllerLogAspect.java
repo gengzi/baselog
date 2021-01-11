@@ -1,7 +1,6 @@
 package fun.gengzi.baselog.instrument.controller;
 
 
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -10,6 +9,7 @@ import fun.gengzi.baselog.utils.IPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -30,6 +30,9 @@ import java.util.Map;
 @Slf4j
 public class ControllerLogAspect implements MethodInterceptor {
 
+    @Autowired
+    private BaseLogUserService baseLogUserService;
+
     private static final ThreadLocal<Long> BUSINESS_TIME = new ThreadLocal<>();
 
 
@@ -39,6 +42,7 @@ public class ControllerLogAspect implements MethodInterceptor {
     public LoggerFormat requestLog(MethodInvocation methodInvocation) {
         // 设置进入业务时间
         BUSINESS_TIME.set(System.currentTimeMillis());
+        // 获取请求信息
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
             return null;
@@ -47,26 +51,33 @@ public class ControllerLogAspect implements MethodInterceptor {
         HttpServletRequest request = requestAttributes.getRequest();
         // 请求方法名称
         Method method = methodInvocation.getMethod();
-        String ipAddr = IPUtils.getIpAddr();
+        final String ipAddr = IPUtils.getIpAddr();
         // 请求方式
-        String requestMethod = request.getMethod();
+        final String requestMethod = request.getMethod();
         // 请求路径
-        String requestURI = request.getRequestURI();
+        final String requestURI = request.getRequestURI();
         // 接口调用实际路径
-        Map<String, String[]> parameterMap = request.getParameterMap();
         if (request.getMethod().equalsIgnoreCase(RequestMethod.GET.name())) {
             // 所有的参数
-            Map<String, String[]> parameterMap1 = request.getParameterMap();
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            loggerInfo.setRequestMap(parameterMap);
         } else if (request.getMethod().equalsIgnoreCase(RequestMethod.POST.name())) {
             Object[] arguments = methodInvocation.getArguments();
+            loggerInfo.setRequestData(arguments);
         }
+        // 设置到threadlocal中
         LoggerHolder.set(loggerInfo);
+        // 设置请求信息
         loggerInfo.setDeviceIp(ipAddr);
+        loggerInfo.setReqUrl(requestURI);
+        loggerInfo.setHttpMethod(requestMethod);
+        loggerInfo.setRequestName(method.getName());
+        loggerInfo.setUserId(baseLogUserService.getUserId() == null ? baseLogUserService.getUserId() : "");
         ArrayList<Object> objects = new ArrayList<>();
         objects.add(method.getName());
         objects.add(JSONUtil.toJsonStr(loggerInfo));
+        // crl层接口类接口方法请求数据
         return new LoggerFormat("{}#request:{}", objects);
-//        log.info("{}#request:{}", method.getName(), JSONUtil.toJsonStr(loggerInfo));
     }
 
 
@@ -74,21 +85,35 @@ public class ControllerLogAspect implements MethodInterceptor {
      * 响应日志
      */
     public LoggerFormat responseLog(MethodInvocation methodInvocation, Object proceed) {
-        log.info("{}",proceed);
-        LoggerInfo loggerInfo = LoggerHolder.get();
-        LoggerHolder.remove();
-        if(JSONUtil.isJsonObj(JSONUtil.toJsonStr(proceed))){
-            JSONObject jsonObject = JSONUtil.parseObj(JSONUtil.toJsonStr(proceed));
+        try {
+            // 移除本线程中存储的内容，手动清除防止内容泄露
+            LoggerInfo loggerInfo = LoggerHolder.get();
 
-        }else if(JSONUtil.isJsonArray(JSONUtil.toJsonStr(proceed))){
-            JSONArray objects = JSONUtil.parseArray(JSONUtil.toJsonStr(proceed));
-        }else{
-            //
+            if (JSONUtil.isJsonObj(JSONUtil.toJsonStr(proceed))) {
+                JSONObject jsonObject = JSONUtil.parseObj(JSONUtil.toJsonStr(proceed));
+                loggerInfo.setResult(jsonObject);
+            } else if (JSONUtil.isJsonArray(JSONUtil.toJsonStr(proceed))) {
+                JSONArray objects = JSONUtil.parseArray(JSONUtil.toJsonStr(proceed));
+                loggerInfo.setResult(objects);
+            } else {
+                loggerInfo.setResult(proceed);
+            }
+            loggerInfo.setTimeCostMils(System.currentTimeMillis() - BUSINESS_TIME.get());
+
+            Method method = methodInvocation.getMethod();
+            ArrayList<Object> objects = new ArrayList<>();
+            objects.add(method.getName());
+            objects.add(JSONUtil.toJsonStr(loggerInfo));
+            return new LoggerFormat("{}#response:{}", objects);
+        } catch (Exception e) {
+            return new LoggerFormat("{}#response:{}", new ArrayList<>());
+        } finally {
+            // 移除本线程中存储的内容，手动清除防止内容泄露
+            LoggerHolder.remove();
+            BUSINESS_TIME.remove();
         }
-        Method method = methodInvocation.getMethod();
-        ArrayList<Object> objects = new ArrayList<>();
-        objects.add(method.getName());
-        return new LoggerFormat("{}#response", objects);
+
+
     }
 
 
