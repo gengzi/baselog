@@ -27,7 +27,7 @@ import java.util.Map;
  * @author gengzi
  * @date 2021年1月6日14:44:15
  */
-@Slf4j
+@Slf4j // topic 分类 对应 logger name
 public class ControllerLogAspect implements MethodInterceptor {
 
     @Autowired
@@ -72,7 +72,7 @@ public class ControllerLogAspect implements MethodInterceptor {
         loggerInfo.setReqUrl(requestURI);
         loggerInfo.setHttpMethod(requestMethod);
         loggerInfo.setRequestName(method.getName());
-        loggerInfo.setUserId(baseLogUserService.getUserId() == null ? baseLogUserService.getUserId() : "");
+        loggerInfo.setUserId(baseLogUserService.getUserId() != null ? baseLogUserService.getUserId() : "");
         ArrayList<Object> objects = new ArrayList<>();
         objects.add(method.getName());
         objects.add(JSONUtil.toJsonStr(loggerInfo));
@@ -86,9 +86,7 @@ public class ControllerLogAspect implements MethodInterceptor {
      */
     public LoggerFormat responseLog(MethodInvocation methodInvocation, Object proceed) {
         try {
-            // 移除本线程中存储的内容，手动清除防止内容泄露
             LoggerInfo loggerInfo = LoggerHolder.get();
-
             if (JSONUtil.isJsonObj(JSONUtil.toJsonStr(proceed))) {
                 JSONObject jsonObject = JSONUtil.parseObj(JSONUtil.toJsonStr(proceed));
                 loggerInfo.setResult(jsonObject);
@@ -99,7 +97,6 @@ public class ControllerLogAspect implements MethodInterceptor {
                 loggerInfo.setResult(proceed);
             }
             loggerInfo.setTimeCostMils(System.currentTimeMillis() - BUSINESS_TIME.get());
-
             Method method = methodInvocation.getMethod();
             ArrayList<Object> objects = new ArrayList<>();
             objects.add(method.getName());
@@ -112,8 +109,6 @@ public class ControllerLogAspect implements MethodInterceptor {
             LoggerHolder.remove();
             BUSINESS_TIME.remove();
         }
-
-
     }
 
 

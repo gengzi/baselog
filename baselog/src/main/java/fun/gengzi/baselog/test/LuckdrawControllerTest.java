@@ -1,6 +1,7 @@
 package fun.gengzi.baselog.test;
 
 import fun.gengzi.baselog.LoggerInfo;
+import fun.gengzi.baselog.instrument.annotations.BaseLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,11 +56,18 @@ public class LuckdrawControllerTest {
         });
 
 
+        testLog("zhangsan");
+
         LoggerInfo loggerInfo = new LoggerInfo();
         loggerInfo.setDeviceIp("hahah");
 
         return loggerInfo;
     }
 
+
+    @BaseLog(businessInfo = "测试方法")
+    public String testLog(String name) {
+        return "你好呀:" + name;
+    }
 }
 

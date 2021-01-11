@@ -13,6 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ * <h1>全局日志拦截器</h1>
+ *
+ * @author gengzi
+ * @date 2021年1月11日21:00:37
+ */
 @Slf4j
 public class TraceFilter implements Filter {
 

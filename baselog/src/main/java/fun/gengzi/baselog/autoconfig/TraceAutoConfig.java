@@ -4,6 +4,7 @@ import fun.gengzi.baselog.BaseLogProperties;
 import fun.gengzi.baselog.LoggerInfo;
 import fun.gengzi.baselog.MDCContentCreate;
 import fun.gengzi.baselog.filter.TraceFilter;
+import fun.gengzi.baselog.instrument.annotations.BaseLogAspect;
 import fun.gengzi.baselog.instrument.controller.BaseLogUserService;
 import fun.gengzi.baselog.instrument.controller.ControllerLogAspect;
 import fun.gengzi.baselog.instrument.controller.DefaultBaseLogUserServiceImpl;
@@ -71,6 +72,12 @@ public class TraceAutoConfig {
     }
 
 
+    /**
+     * ctl 切面类
+     * @param baseLogProperties
+     * @param controllerLogAspect
+     * @return
+     */
     @Bean
     public AspectJExpressionPointcutAdvisor aspectJExpressionPointcutAdvisor(BaseLogProperties baseLogProperties, ControllerLogAspect controllerLogAspect) {
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
@@ -80,10 +87,21 @@ public class TraceAutoConfig {
     }
 
 
+    /**
+     * 用户服务
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     public BaseLogUserService baseLogUserService() {
         return new DefaultBaseLogUserServiceImpl();
     }
+
+
+//    @Bean
+//    @ConditionalOnMissingBean
+//    public BaseLogAspect baseLogAspect(){
+//        return new BaseLogAspect();
+//    }
 
 }
