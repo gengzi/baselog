@@ -26,7 +26,6 @@ public class BaseLogAspect {
 
     @Pointcut("@annotation(fun.gengzi.baselog.instrument.annotations.BaseLog)")
     public void serviceLog() {
-        log.info("haha");
     }
 
 
