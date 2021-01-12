@@ -31,6 +31,6 @@ public class LoggerInfo {
     // 响应数据
     private Object result;
     // 业务时间耗时
-    private Long timeCostMils;
+    private String timeCostMils;
 
 }

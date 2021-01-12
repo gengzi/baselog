@@ -98,10 +98,9 @@ public class TraceAutoConfig {
     }
 
 
-//    @Bean
-//    @ConditionalOnMissingBean
-//    public BaseLogAspect baseLogAspect(){
-//        return new BaseLogAspect();
-//    }
+    @Bean
+    public BaseLogAspect baseLogAspect(){
+        return new BaseLogAspect();
+    }
 
 }

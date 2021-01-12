@@ -5,19 +5,23 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import fun.gengzi.baselog.LoggerInfo;
+import fun.gengzi.baselog.instrument.annotations.BaseLog;
 import fun.gengzi.baselog.utils.IPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * <H1>Controller 日志切面</H1>
@@ -34,6 +38,25 @@ public class ControllerLogAspect implements MethodInterceptor {
     private BaseLogUserService baseLogUserService;
 
     private static final ThreadLocal<Long> BUSINESS_TIME = new ThreadLocal<>();
+
+
+    private boolean isCtl(MethodInvocation methodInvocation) {
+        // 	GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE
+        Method method = methodInvocation.getMethod();
+        Annotation[] declaredAnnotations = method.getDeclaredAnnotations();
+        boolean flag = Arrays.stream(declaredAnnotations).anyMatch(annotation -> {
+            if (annotation instanceof RequestMapping ||
+                    annotation instanceof GetMapping ||
+                    annotation instanceof PostMapping ||
+                    annotation instanceof PutMapping ||
+                    annotation instanceof DeleteMapping ||
+                    annotation instanceof PatchMapping) {
+                return true;
+            }
+            return false;
+        });
+        return flag;
+    }
 
 
     /**
@@ -96,13 +119,14 @@ public class ControllerLogAspect implements MethodInterceptor {
             } else {
                 loggerInfo.setResult(proceed);
             }
-            loggerInfo.setTimeCostMils(System.currentTimeMillis() - BUSINESS_TIME.get());
+            loggerInfo.setTimeCostMils(System.currentTimeMillis() - BUSINESS_TIME.get() + "ms");
             Method method = methodInvocation.getMethod();
             ArrayList<Object> objects = new ArrayList<>();
             objects.add(method.getName());
             objects.add(JSONUtil.toJsonStr(loggerInfo));
             return new LoggerFormat("{}#response:{}", objects);
         } catch (Exception e) {
+            log.error("ControllerLogAspect error:{}", e.getMessage());
             return new LoggerFormat("{}#response:{}", new ArrayList<>());
         } finally {
             // 移除本线程中存储的内容，手动清除防止内容泄露
@@ -121,6 +145,11 @@ public class ControllerLogAspect implements MethodInterceptor {
      */
     @Override
     public final Object invoke(MethodInvocation methodInvocation) throws Throwable {
+        boolean ctl = isCtl(methodInvocation);
+        if (!ctl) {
+            Object proceed = methodInvocation.proceed();
+            return proceed;
+        }
         // 记录请求日志
         LoggerFormat requestLog = requestLog(methodInvocation);
         log.info(requestLog.getFormat(), requestLog.getLogContent().toArray());
