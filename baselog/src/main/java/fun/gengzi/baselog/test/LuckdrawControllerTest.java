@@ -57,7 +57,7 @@ public class LuckdrawControllerTest {
 
         serviceTest.test("zhangsan");
 
-        serviceTest.test("zhangsan2");
+        serviceTest.test2("zhangsan2");
         threadPoolExecutor.execute(() -> {
             // 会丢失日志
             log.info("测试打印日志4：{}", data);
