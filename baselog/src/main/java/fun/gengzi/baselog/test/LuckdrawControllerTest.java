@@ -66,6 +66,9 @@ public class LuckdrawControllerTest {
         LoggerInfo loggerInfo = new LoggerInfo();
         loggerInfo.setDeviceIp("hahah");
 
+
+        log.error("测试发送邮件");
+
         return loggerInfo;
     }
 
