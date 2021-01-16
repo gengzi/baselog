@@ -2,9 +2,9 @@
 <!-- scan 配置文件如果发生改变，将会被重新加载  scanPeriod 检测间隔时间 BY 科帮网 小柒2012 欢迎关注博客https://blog.52itstyle.com-->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
 
-<!--                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L - %msg%n</pattern>-->
-<!--    <property name="CONSOLE_LOG_PATTERN"-->
-<!--              value="%yellow(%d{yyyy-MM-dd HH:mm:ss.SSS}) |%highlight(%-5level) |%blue(%thread) |%blue(%file:%line) |%green(%logger) | %msg%n "/>-->
+    <!--                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L - %msg%n</pattern>-->
+    <!--    <property name="CONSOLE_LOG_PATTERN"-->
+    <!--              value="%yellow(%d{yyyy-MM-dd HH:mm:ss.SSS}) |%highlight(%-5level) |%blue(%thread) |%blue(%file:%line) |%green(%logger) | %msg%n "/>-->
 
     <property name="CONSOLE_LOG_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%X{bl-traceid}]  %thread %logger Line:%-3L - %msg%n"/>
@@ -69,7 +69,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- 日志格式 -->
         <encoder>
-<!--            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L - %msg%n</pattern>-->
+            <!--            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L - %msg%n</pattern>-->
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
             <charset>utf-8</charset>
         </encoder>
@@ -80,7 +80,6 @@
     </appender>
 
 
-
     <!--  邮件 -->
     <!-- SMTP server的地址，必需指定。如网易的SMTP服务器地址是： smtp.163.com -->
     <property name="smtpHost" value="smtp.qq.com"/><!--填入要发送邮件的smtp服务器地址-->
@@ -88,23 +87,25 @@
     <property name="smtpPort" value="465"/>
     <!-- 发送邮件账号，默认为null -->
     <property name="username" value="1164014750@qq.com"/><!--发件人账号-->
-    <!-- 发送邮件密码，默认为null -->
-    <property name="password" value="thekvnzyoxgsgafg"/><!--发件人密码-->
+    <!-- 发送邮件密码，默认为null  cglqtzkbbkndidjd -->
+    <property name="password" value="cglqtzkbbkndidjd"/><!--发件人密码-->
     <!-- 如果设置为true，appender将会使用SSL连接到日志服务器。默认值：false -->
-    <property name="SSL" value="false"/>
+    <property name="SSL" value="true"/>
     <!-- 指定发送到那个邮箱，可设置多个<to>属性，指定多个目的邮箱 -->
     <property name="email_to" value="332235918@qq.com"/><!--收件人账号多个可以逗号隔开-->
     <!-- 指定发件人名称。如果设置成“&lt;ADMIN&gt; ”，则邮件发件人将会是“<ADMIN> ” -->
-    <property name="email_from" value="base_log" />
+    <!--    SMTPAppender 使用的发件人，格式遵循邮件通用格式，如果你想要包含发送者的名字，使用这种格式 " Adam Smith <smith@moral.org>"，那么邮件将会显示收件人为 " Adam Smith \smith@moral.org\"-->
+    <property name="email_from" value="1164014750@qq.com"/>
     <!-- 指定emial的标题，它需要满足PatternLayout中的格式要求。如果设置成“Log: %logger - %msg ”，就案例来讲，则发送邮件时，标题为“【Error】: com.foo.Bar - Hello World ”。 默认值："%logger{20} - %m". -->
-    <property name="email_subject" value="【Error】: %logger" />
+    <property name="email_subject" value="【Error】: %logger"/>
     <!-- ERROR邮件发送 -->
     <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
         <smtpHost>${smtpHost}</smtpHost>
         <smtpPort>${smtpPort}</smtpPort>
         <username>${username}</username>
         <password>${password}</password>
-        <asynchronousSending>true</asynchronousSending>
+        <!--决定邮件传输是否是异步进行。默认为 'true'。但是，在某些特定的情况下，异步发送不怎么合适。例如，当发生一个严重错误时，你的应用使用 SMTPAppender 去发送一个警告，然后退出。但是相关线程可能没有时间去发送警告邮件。在这种情况下，你可以设置该属性的值为 'false'。-->
+        <asynchronousSending>false</asynchronousSending>
         <SSL>${SSL}</SSL>
         <to>${email_to}</to>
         <from>${email_from}</from>
@@ -114,25 +115,16 @@
             <Pattern>%date%level%thread%logger{0}%line%message</Pattern>
         </layout>
         　　　　 <!-- 这里采用等级过滤器 指定等级相符才发送 -->
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
+        <!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+        <!--            <level>ERROR</level>-->
+        <!--            <onMatch>ACCEPT</onMatch>-->
+        <!--            <onMismatch>DENY</onMismatch>-->
+        <!--        </filter>-->
         <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTracker">
             <!-- 每个电子邮件只发送一个日志条目 -->
             <bufferSize>1</bufferSize>
         </cyclicBufferTracker>
     </appender>
-
-
-
-
-
-
-
-
-
 
     <!-- 屏蔽kafka的警告 -->
     <logger name="org.apache.kafka" level="ERROR"/>
