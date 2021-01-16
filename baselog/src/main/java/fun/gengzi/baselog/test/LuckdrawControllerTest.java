@@ -3,6 +3,7 @@ package fun.gengzi.baselog.test;
 import fun.gengzi.baselog.LoggerInfo;
 import fun.gengzi.baselog.instrument.annotations.BaseLog;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -58,9 +60,13 @@ public class LuckdrawControllerTest {
         serviceTest.test("zhangsan");
 
         serviceTest.test2("zhangsan2");
+
+        Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
         threadPoolExecutor.execute(() -> {
             // 会丢失日志
             log.info("测试打印日志4：{}", data);
+            MDC.setContextMap(copyOfContextMap);
+            log.info("设置后-测试打印日志5：{}",data);
         });
 
         LoggerInfo loggerInfo = new LoggerInfo();
