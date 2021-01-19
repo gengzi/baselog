@@ -2,6 +2,7 @@ package fun.gengzi.baselog.test;
 
 import fun.gengzi.baselog.LoggerInfo;
 import fun.gengzi.baselog.instrument.annotations.BaseLog;
+import fun.gengzi.baselog.instrument.execute.MDCInheritableThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequestMapping("/test")
 public class LuckdrawControllerTest {
 
+
+
     @Autowired
     private ServiceTest serviceTest;
 
     private static final AtomicInteger num = new AtomicInteger(1);
 
     ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+            5,
+            5 + 1,
+            60L,
+            TimeUnit.SECONDS,
+            new LinkedBlockingDeque<>(10_00), new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "test-thread" + num.getAndIncrement());
+        }
+    });
+
+    BaseLogThreadPoolExecuter baseLogThreadPoolExecuter = new BaseLogThreadPoolExecuter(
             5,
             5 + 1,
             60L,
@@ -61,12 +76,17 @@ public class LuckdrawControllerTest {
 
         serviceTest.test2("zhangsan2");
 
-        Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
+//        Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
         threadPoolExecutor.execute(() -> {
             // 会丢失日志
             log.info("测试打印日志4：{}", data);
-            MDC.setContextMap(copyOfContextMap);
+            MDC.setContextMap((Map<String, String>) MDCInheritableThreadLocal.get());
             log.info("设置后-测试打印日志5：{}",data);
+        });
+
+
+        baseLogThreadPoolExecuter.execute(() -> {
+            log.info("测试打印日志6：{}", data);
         });
 
         LoggerInfo loggerInfo = new LoggerInfo();

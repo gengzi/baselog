@@ -3,6 +3,7 @@ package fun.gengzi.baselog.filter;
 import fun.gengzi.baselog.BaseLogProperties;
 import fun.gengzi.baselog.LogFiedsEnum;
 import fun.gengzi.baselog.MDCContentCreate;
+import fun.gengzi.baselog.instrument.execute.MDCInheritableThreadLocal;
 import fun.gengzi.baselog.trace.CreateTraceId;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -12,6 +13,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <h1>全局日志拦截器</h1>
@@ -66,6 +68,7 @@ public class TraceFilter implements Filter {
             map.put(LogFiedsEnum.REQUESTURL.getLogFide(), requestURI);
             MDCContentCreate.writeLog(map);
             // 放行
+            MDCInheritableThreadLocal.set(MDC.getCopyOfContextMap());
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             // 请求MDC 的内容

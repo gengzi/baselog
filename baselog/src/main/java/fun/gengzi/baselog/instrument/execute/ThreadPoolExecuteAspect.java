@@ -23,16 +23,20 @@ import java.util.Random;
 @Configuration
 
 public class ThreadPoolExecuteAspect {
-//
+
 //    @Pointcut("execution(public * java.util.concurrent.ThreadPoolExecutor.execute(..))")
 //    public void requestLog(){
 //
 //    }
-
-    @Pointcut("@annotation(fun.gengzi.baselog.instrument.execute.ThreadPoolExecuteLog)")
-    public void requestLog() {
+    @Pointcut("execution(public * java.lang.Thread.start())")
+    public void requestLog(){
 
     }
+
+//    @Pointcut("@annotation(fun.gengzi.baselog.instrument.execute.ThreadPoolExecuteLog)")
+//    public void requestLog() {
+//
+//    }
 
     /**
      * 将线程中的traceid 传递进来
