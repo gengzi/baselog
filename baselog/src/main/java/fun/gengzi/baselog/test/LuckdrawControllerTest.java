@@ -76,11 +76,12 @@ public class LuckdrawControllerTest {
 
         serviceTest.test2("zhangsan2");
 
+
 //        Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
         threadPoolExecutor.execute(() -> {
             // 会丢失日志
             log.info("测试打印日志4：{}", data);
-            MDC.setContextMap((Map<String, String>) MDCInheritableThreadLocal.get());
+//            MDC.setContextMap((Map<String, String>) MDCInheritableThreadLocal.get());
             log.info("设置后-测试打印日志5：{}",data);
         });
 
