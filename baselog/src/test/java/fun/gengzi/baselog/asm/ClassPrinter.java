@@ -37,6 +37,7 @@ public class ClassPrinter extends ClassVisitor {
     public static void main(String[] args) throws IOException {
         // Opcodes.ASM4  ASM API 的 version
         ClassPrinter cp = new ClassPrinter(Opcodes.ASM4);
+        // 52|1537|java/lang/Runnable|null|java/lang/Object|[Ljava.lang.String;@1e80bfe8
         ClassReader cr = new ClassReader("java.lang.Runnable");
         cr.accept(cp, 0);
     }
