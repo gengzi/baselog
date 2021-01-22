@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Can-Redefine-Classes: true
+Premain-Class: fun.gengzi.baselog.test.TestAgent
+Can-Retransform-Classes: true
+
+
+
