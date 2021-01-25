@@ -25,4 +25,27 @@ public class ServiceTestImpl implements ServiceTest {
         return "测试1";
     }
 
+
+//
+//    @BaseLog(businessInfo = "测试")
+//    @Override
+//    public String test(String data) {
+    // log.info(")
+//        test1();
+//        return "测试" + data;
+//            log.info(")
+//    }
+//
+//    @BaseLog(businessInfo = "测试2")
+//    @Override
+//    public String test2(String data) {
+//        test("dd");
+//        return "测试" + data;
+//    }
+//
+//    @BaseLog(businessInfo = "测试1")
+//    public String test1() {
+//        return "测试1";
+//    }
+
 }
